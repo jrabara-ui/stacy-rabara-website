@@ -243,12 +243,12 @@
 
 <div class="page">
 
-  <p class="wordmark">Stacy Rabara</p>
-  <p class="credential">REALTOR<sup>&reg;</sup></p>
-
   <div class="headshot">
     <img src="Stacy_Rabara_Headshot_1.jpg" alt="Stacy Rabara, REALTOR">
   </div>
+
+  <p class="wordmark">Stacy Rabara</p>
+  <p class="credential">REALTOR<sup>&reg;</sup></p>
 
   <div class="card">
 
@@ -263,8 +263,18 @@
 
       <div>
         <label for="email">Email</label>
-        <input type="email" id="email" name="email" placeholder="you@email.com" required>
+        <input type="email" id="email" name="email" placeholder="you@email.com"
+          title="Enter a valid email address, like name@example.com">
       </div>
+
+      <div>
+        <label for="phone">Phone</label>
+        <input type="tel" id="phone" name="phone" placeholder="(555) 123-4567"
+          pattern="^\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}$"
+          title="Enter a 10-digit phone number, like (555) 123-4567">
+      </div>
+
+      <p class="lede" style="margin: -8px 0 0; font-size: 12px;">Provide at least an email or a phone number.</p>
 
       <fieldset>
         <legend>I'm looking to</legend>
@@ -311,10 +321,37 @@
   const success = document.getElementById('successMessage');
   const errorMessage = document.getElementById('errorMessage');
   const submitBtn = document.getElementById('submitBtn');
+  const phoneInput = document.getElementById('phone');
+
+  phoneInput.addEventListener('input', function () {
+    let digits = phoneInput.value.replace(/\D/g, '').slice(0, 10);
+    let formatted = digits;
+    if (digits.length > 6) {
+      formatted = '(' + digits.slice(0, 3) + ') ' + digits.slice(3, 6) + '-' + digits.slice(6);
+    } else if (digits.length > 3) {
+      formatted = '(' + digits.slice(0, 3) + ') ' + digits.slice(3);
+    } else if (digits.length > 0) {
+      formatted = '(' + digits;
+    }
+    phoneInput.value = formatted;
+  });
 
   form.addEventListener('submit', function (e) {
     e.preventDefault();
     errorMessage.classList.remove('visible');
+
+    const emailInput = document.getElementById('email');
+    const emailVal = emailInput.value.trim();
+    const phoneVal = phoneInput.value.trim();
+
+    if (!emailVal && !phoneVal) {
+      errorMessage.textContent = 'Please provide an email or a phone number.';
+      errorMessage.classList.add('visible');
+      emailInput.focus();
+      return;
+    }
+
+    errorMessage.textContent = 'Something went wrong. Please try again, or email stacy.r.rabara@gmail.com directly.';
     submitBtn.disabled = true;
     submitBtn.textContent = 'Sending...';
 
